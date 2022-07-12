@@ -15,6 +15,8 @@ European Conference on Computer Vision (**ECCV**), 2022.
 ## Introduction
 Weakly-supervised temporal action localization (WS-TAL) aims to localize the action instances and recognize their categories with only video-level labels. Despite great progress, existing methods suffer from severe action-background ambiguity, which mainly comes from background noise introduced by aggregation operations and large intra-action variations caused by the task gap between classification and localization. To address this issue, we propose a generalized evidential deep learning (EDL) framework for WS-TAL, called Dual-Evidential Learning for Uncertainty modeling (DELU), which extends the traditional paradigm of EDL to adapt to the weakly-supervised multi-label classification goal. Specifically, targeting at adaptively excluding the undesirable background snippets, we utilize the video-level uncertainty to measure the interference of background noise to video-level prediction. Then, the snippet-level uncertainty is further induced for progressive learning, which gradually focuses on the entire action instances in an ``easy-to-hard'' manner. Extensive experiments show that DELU achieves state-of-the-art performance on THUMOS14 and ActivityNet1.2 benchmarks.
 
+![avatar](./figs/arch.png)
+
 ## Prerequisites
 ### Requirements and Dependencies:
 Here we list our used requirements and dependencies.
@@ -42,7 +44,7 @@ Put our provided pretrained model best_DELU.pkl under the project folder, and ru
 ```
 
 ## Training
-Change "/path/to/thumos" into your own path to the dataset , and run:
+Change "path/to/thumos" into your own path to the dataset, and run:
 ```
 ./train_thumos.sh
 ```
@@ -50,12 +52,12 @@ Change "/path/to/thumos" into your own path to the dataset , and run:
 ## Citation
 If you find the code useful in your research, please cite:
 
- @inproceedings{mengyuan2022ECCV_DELU,
- author = {Chen, Mengyuan and Gao, Junyu and Yang, Shicai and Xu, Changsheng},
- title = {Dual-Evidential Learning for Weakly-supervised Temporal Action Localization},
- booktitle = {European Conference on Computer Vision (ECCV)},
- year = {2022}
- }
+    @inproceedings{mengyuan2022ECCV_DELU,
+      author = {Chen, Mengyuan and Gao, Junyu and Yang, Shicai and Xu, Changsheng},
+      title = {Dual-Evidential Learning for Weakly-supervised Temporal Action Localization},
+      booktitle = {European Conference on Computer Vision (ECCV)},
+      year = {2022}
+    }
 
 ## License
 
