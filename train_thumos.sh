@@ -6,7 +6,7 @@ python main.py \
 --alpha_uct_guide 0.4 \
 --amplitude 0.7 \
 --alpha2 0.4 \
---interval 200 \
+--interval 50 \
 --max_seqlen 320 \
 --lr 0.00005 \
 --k 7 \
