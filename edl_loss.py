@@ -2,15 +2,6 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 from base import BaseWeightedLoss
-from scipy.special import xlogy
-
-
-def compute_BALD_uncertainty(predictions, k=20):
-    expected_p = torch.ones(k) / k
-    entropy_expected_p = -torch.sum(expected_p * torch.log(expected_p))
-    expected_entropy = -torch.sum(predictions * torch.log(predictions), dim=-1)
-    uncertain_score = entropy_expected_p - expected_entropy
-    return uncertain_score
 
 
 def relu_evidence(y):
@@ -129,19 +120,7 @@ class EvidenceLoss(BaseWeightedLoss):
         alpha: the predictions (batch_size, num_classes)
         epoch_num: the current training epoch
         """
-        # BALD Uncertainty
-        # --------------------------------------------------------------------------------
-        # losses = {}
-        # S = torch.sum(alpha, dim=1, keepdim=True)
-        # pred = alpha / S
-        # uncertainty = compute_BALD_uncertainty(pred)
-        # label_num = torch.sum(y, dim=1, keepdim=True)
-        # temp = 1 / alpha * y
-        # g = (1 - uncertainty) * label_num * torch.div(temp, torch.sum(temp, dim=1, keepdim=True))
-        # A = torch.sum(g * (func(S) - func(alpha)), dim=1, keepdim=True)
 
-        # Final DELU
-        # --------------------------------------------------------------------------------
         losses = {}
         S = torch.sum(alpha, dim=1, keepdim=True)
         uncertainty = self.num_classes / S
@@ -149,37 +128,8 @@ class EvidenceLoss(BaseWeightedLoss):
         label_num = torch.sum(y, dim=1, keepdim=True)
 
         temp = 1 / alpha * y
-        # g = torch.div(temp, torch.sum(temp, dim=1, keepdim=True))
-        # g = label_num * torch.div(temp, torch.sum(temp, dim=1, keepdim=True))
         g = (1 - uncertainty.detach()) * label_num * torch.div(temp, torch.sum(temp, dim=1, keepdim=True))
-
-        # g = y / (torch.sum(y, dim=1, keepdim=True) + 1e-4)
-        # g = y / torch.sum(y, dim=1, keepdim=True)
-
-        # A = torch.sum(y * (func(S) - func(alpha)), dim=1, keepdim=True)
         A = torch.sum(g * (func(S) - func(alpha)), dim=1, keepdim=True)
-
-        # Traditional EDL
-        # --------------------------------------------------------------------------------
-
-        # losses = {}
-        # S = torch.sum(alpha, dim=1, keepdim=True)
-        # # uncertainty = self.num_classes / S
-        # #
-        # # label_num = torch.sum(y, dim=1, keepdim=True)
-        # #
-        # # temp = 1 / alpha * y
-        # # g = torch.div(temp, torch.sum(temp, dim=1, keepdim=True))
-        # # g = label_num * torch.div(temp, torch.sum(temp, dim=1, keepdim=True))
-        # # g = (1 - uncertainty.detach()) * label_num * torch.div(temp, torch.sum(temp, dim=1, keepdim=True))
-        #
-        # # g = y / (torch.sum(y, dim=1, keepdim=True) + 1e-4)
-        # # g = y / torch.sum(y, dim=1, keepdim=True)
-        #
-        # A = torch.sum(y * (func(S) - func(alpha)), dim=1, keepdim=True)
-        # # A = torch.sum(g * (func(S) - func(alpha)), dim=1, keepdim=True)
-
-        # --------------------------------------------------------------------------------
 
         losses.update({'loss_cls': A})
 
@@ -190,9 +140,6 @@ class EvidenceLoss(BaseWeightedLoss):
                      self.kl_divergence(kl_alpha)
             losses.update({'loss_kl': kl_div})
 
-        # 在单标签的情况下，完全相等才算预测正确。但在多标签的情况下，如何衡量是否预测正确？
-        # 在多标签情况下，对avuloss进行修改。
-
         if self.with_avuloss:
             pred = alpha / S
             uncertainty = self.num_classes / S
@@ -201,47 +148,11 @@ class EvidenceLoss(BaseWeightedLoss):
             acc_uncertain = - (torch.ones_like(inacc_measure) - inacc_measure) * torch.log(1 - uncertainty + self.eps)
             inacc_certain = - inacc_measure * torch.log(uncertainty + self.eps)
 
-            # avu_loss = - inacc_measure * torch.log(uncertainty + self.eps)
-
-            # # Plan A: 最大预测值正确即正确
-            # batch_size, n_class = y.shape
-            # target_one_hot = target.clone()
-            # target_one_hot[target_one_hot > 0] = 1
-            # pred_scores, pred_cls = torch.max(pred, 1, keepdim=True)
-            # bool_pred = torch.eye(n_class)[pred_cls.squeeze()]
-            # acc_match = torch.sum(target_one_hot * bool_pred) / batch_size
-
-            # Plan B: 按inacc_measure阈值判断是否正确
             batch_size, _ = y.shape
             inacc_measure_bool = inacc_measure.clone()
             inacc_measure_bool[inacc_measure_bool > 0.7] = 1
             inacc_measure_bool[inacc_measure_bool <= 0.7] = 0
             acc_match = 1 - torch.sum(inacc_measure_bool) / batch_size
-
-
-            # 方案二：预测中多标签中的任一标签都算预测正确。
-            # batch_size, n_class = y.shape
-            # target_one_hot = target.clone()
-            # target_one_hot[target_one_hot > 0] = 1
-            # uncertainty = self.num_classes / S
-            # pred_scores, pred_cls = torch.max(alpha / S, 1, keepdim=True)
-            # bool_pred = torch.eye(n_class)
-            # bool_pred = bool_pred[pred_cls.squeeze()]
-            # acc_match = torch.sum(target_one_hot * bool_pred) / batch_size
-
-            # losses.update({'acc_match': acc_match})
-            # acc_match = torch.reshape(torch.eq(pred_cls, target.unsqueeze(1)).float(), (-1, 1))
-
-            # if self.disentangle:
-            #     acc_uncertain = - torch.log(pred_scores * (1 - uncertainty) + self.eps)
-            #     inacc_certain = - torch.log((1 - pred_scores) * uncertainty + self.eps)
-            # else:
-            #     acc_uncertain = - pred_scores * torch.log(1 - uncertainty + self.eps)
-            #     inacc_certain = - (1 - pred_scores) * torch.log(uncertainty + self.eps)
-
-            # avu_loss = acc_uncertain + inacc_certain
-
-            # avu_loss = acc_match * acc_uncertain + (1 - acc_match) * inacc_certain
 
             avu_loss = annealing_coef * acc_match * acc_uncertain + (1 - annealing_coef) * (
                         1 - acc_match) * inacc_certain
@@ -306,18 +217,7 @@ class EvidenceLoss(BaseWeightedLoss):
         else:
             raise NotImplementedError
 
-        # compute uncertainty and evidence
-        # _, preds = torch.max(output, 1)
-        # match = torch.reshape(torch.eq(preds, target).float(), (-1, 1))
-
-        # match = results['acc_match']
         uncertainty = self.num_classes / torch.sum(alpha, dim=1, keepdim=True)
-        # total_evidence = torch.sum(evidence, 1, keepdim=True)
-        # evidence_succ = torch.sum(total_evidence * match) / torch.sum(match + 1e-20)
-        # evidence_fail = torch.sum(total_evidence * (1 - match)) / (torch.sum(torch.abs(1 - match)) + 1e-20)
-        results.update({'uncertainty': uncertainty,
-                        # 'evidence_succ': evidence_succ,
-                        # 'evidence_fail': evidence_fail,
-                        })
+        results.update({'uncertainty': uncertainty})
 
         return results
