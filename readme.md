@@ -38,18 +38,35 @@ We use the 2048-d features provided by MM 2021 paper: Cross-modal Consensus Netw
 We also use the features provided in [MM2021-CO2-Net](https://github.com/harlanhong/MM2021-CO2-Net). The features can be obtained from [here](https://rpi.app.box.com/s/hf6djlgs7vnl7a2oamjt0vkrig42pwho). The annotations are included within this package.
 
 ## Testing
-Download the pretrained model: https://drive.google.com/file/d/1LrCIUZN101SzTqNdNqc_RSQq2zhrm2Ha/view?usp=sharing
+Download the pretrained models from [Google Drive](https://drive.google.com/drive/folders/1uSUJEo7iN7A3HpY0YD_e_99ECSxk7Tvi?usp=share_link), and put them into "./download_ckpt/".
 
-Put our provided pretrained model best_DELU.pkl under the project folder, and run:
-
+### Test on THUMOS-14
+Change "path/to/CO2-THUMOS-14" in the script into your own path to the dataset, and run:
 ```
+cd scripts/
 ./test_thumos.sh
 ```
 
-## Training
-Change "path/to/thumos" into your own path to the dataset, and run:
+### Test on ActivityNet-v1.2
+Change "path/to/CO2-ActivityNet-12" in the script into your own path to the dataset, and run:
 ```
+cd scripts/
+./test_activitynet.sh
+```
+
+## Training
+Change the dataset paths as stated above, and run:
+
+```
+cd scripts/
 ./train_thumos.sh
+```
+
+or
+
+```
+cd scripts/
+./train_activitynet.sh
 ```
 
 ## Citation
