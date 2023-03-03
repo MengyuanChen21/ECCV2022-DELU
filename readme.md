@@ -54,8 +54,6 @@ cd scripts/
 ./test_activitynet.sh
 ```
 
-![avatar](./figs/results.png)
-
 ## Training
 Change the dataset paths as stated above, and run:
 
