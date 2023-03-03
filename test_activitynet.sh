@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+cd ..
+
 python test.py
 --dataset_name ActivityNet1.2 \
 --dataset AntSampleDataset \
