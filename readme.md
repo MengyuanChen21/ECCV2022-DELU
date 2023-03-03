@@ -31,8 +31,11 @@ Here we list our used requirements and dependencies.
  - Wandb: 0.12.11
  - Tqdm: 4.64.0
 
-### THUMOS14 Dataset：
+### THUMOS-14 Dataset：
 We use the 2048-d features provided by MM 2021 paper: Cross-modal Consensus Network for Weakly Supervised Temporal Action Localization. You can get access of the dataset from [Google Drive](https://drive.google.com/file/d/1SFEsQNLsG8vgBbqx056L9fjA4TzVZQEu/view?usp=sharing) or [Baidu Disk](https://pan.baidu.com/s/1nspCSpzgwh5AHpSBPPibrQ?pwd=2dej). The annotations are included within this package.
+
+### ActivityNet-v1.3 Dataset：
+We also use the feature provided in [MM2021-CO2-Net](https://github.com/harlanhong/MM2021-CO2-Net). The features can be obtained from [here](https://rpi.app.box.com/s/hf6djlgs7vnl7a2oamjt0vkrig42pwho). The annotations are included within this package.
 
 ## Testing
 Download the pretrained model: https://drive.google.com/file/d/1LrCIUZN101SzTqNdNqc_RSQq2zhrm2Ha/view?usp=sharing
