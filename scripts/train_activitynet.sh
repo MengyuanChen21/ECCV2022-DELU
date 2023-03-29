@@ -14,7 +14,7 @@ python main.py \
 --dataset_name ActivityNet1.2 \
 --path_dataset /path/to/CO2-ActivityNet-12 \
 --num_class 100 \
---use_model ANT_CO2 \
+--use_model DELU_ACT \
 --dataset AntSampleDataset \
 --lr 3e-5 \
 --max_seqlen 60 \
