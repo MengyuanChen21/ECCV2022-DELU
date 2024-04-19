@@ -1,9 +1,16 @@
 # Dual-Evidential Learning for Weakly-supervised Temporal Action Localization
-[Paper]()
+[Paper](https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136640190.pdf)
 
 Mengyuan Chen, Junyu Gao, Shicai Yang, Changsheng Xu
 
 European Conference on Computer Vision (**ECCV**), 2022.
+
+## Update：2024/04/19
+We have further optimized the code, and the provided pre-trained model can now achieve the following performance on THUMOS14:
+|         | @0.1 | @0.2 | @0.3 | @0.4 | @0.5 | @0.6 | @0.7 | 0.1-0.5 |0.1-0.7|
+|  :---:  |:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| DELU (Paper)   |71.5|66.2|56.5|47.7|40.5|27.2|15.3|56.5|46.4|
+| DELU (Latest)  |72.1|66.5|57.0|48.1|40.8|27.8|15.6|56.9|46.8|
 
 ## Table of Contents
 1. [Introduction](#introduction)
