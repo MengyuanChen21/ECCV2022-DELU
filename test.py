@@ -58,6 +58,7 @@ def test(itr, dataset, args, model, device):
     instance_logits_stack = np.array(instance_logits_stack)
     labels_stack = np.array(labels_stack)
     proposals = pd.concat(proposals).reset_index(drop=True)
+    proposals = proposals[proposals['t-end'] - proposals['t-start'] > 1]
 
     # CVPR2020
     if 'Thumos14' in args.dataset_name:
