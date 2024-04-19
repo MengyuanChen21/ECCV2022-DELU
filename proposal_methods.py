@@ -111,7 +111,7 @@ def multiple_threshold_hamnet(vid_name, data_dict):
     pred = np.where(pred_vid_score >= 0.2)[0]
 
     # NOTE: threshold
-    act_thresh = np.linspace(0.1, 0.9, 10)
+    act_thresh = np.linspace(0.1, 0.9, 20)
     # act_thresh = np.linspace(0.2,0.4,10)
 
     prediction = None
